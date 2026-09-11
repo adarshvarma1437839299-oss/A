@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#d8c29d">
+  <title>Surprise...!</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Special+Elite&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
+
+  <style>
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --paper: #fdfbf7;
+  --paper-border: #e2d2ba;
+  --ink: #4a3525;
+  --brown: #8c5835;
+  --brown-dark: #724426;
+  --cream: #f7ede2;
+  --accent: #b8956e;
+}
+
+body {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  position: relative;
+  padding: 24px;
+  text-align: center;
+  font-family: "Special Elite", cursive, serif;
+  background-color: #d8c29d;
+  background-image:
+    radial-gradient(circle at 50% 50%, rgba(255, 255, 255, .15) 0%, rgba(0, 0, 0, .12) 100%),
+    repeating-linear-gradient(0deg, transparent 0 2px, rgba(0, 0, 0, .02) 2px 4px);
+}
+
+.card {
+  width: min(440px, 92vw);
+  padding: 45px 40px;
+  position: relative;
+  z-index: 2;
+  border: 1px solid var(--paper-border);
+  border-radius: 12px;
+  background: var(--paper);
+  box-shadow:
+    0 1px 1px rgba(0, 0, 0, .08),
+    0 15px 30px rgba(78, 52, 34, .22),
+    inset 0 0 40px rgba(216, 194, 157, .35);
+}
+
+.card::before {
+  content: "";
+  position: absolute;
+  top: -14px;
+  left: 50%;
+  width: 110px;
+  height: 28px;
+  transform: translateX(-50%);
+  background: rgba(220, 195, 160, .7);
+  border-left: 2px dashed rgba(160, 130, 95, .4);
+  border-right: 2px dashed rgba(160, 130, 95, .4);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, .1);
+}
+
+h1 {
+  color: var(--ink);
+  font-family: "Playfair Display", serif;
+  font-size: clamp(26px, 7vw, 32px);
+  font-style: italic;
+  line-height: 1.35;
+  margin-bottom: 28px;
+}
+
+.buttons {
+  min-height: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  position: relative;
+}
+
+button {
+  border-radius: 6px;
+  cursor: pointer;
+  font: 17px "Special Elite", cursive, serif;
+  padding: 12px 28px;
+  -webkit-tap-highlight-color: transparent;
+}
+
+button:focus-visible {
+  outline: 3px solid rgba(140, 88, 53, .35);
+  outline-offset: 3px;
+}
+
+#yes-btn {
+  z-index: 10;
+  color: #fffaf0;
+  background: var(--brown);
+  border: 1px solid #6b4124;
+  box-shadow: 0 4px 10px rgba(80, 48, 25, .25);
+  transition: transform .15s ease, background-color .2s ease;
+}
+
+#yes-btn:hover {
+  background: var(--brown-dark);
+}
+
+#no-btn {
+  z-index: 5;
+  position: relative;
+  color: #7a5438;
+  background: var(--cream);
+  border: 1px dashed #b58d67;
+  white-space: nowrap;
+  transition: left .15s ease, top .15s ease, transform .15s ease;
+}
+
+#no-btn.converted {
+  color: #fff;
+  background: var(--brown);
+  border: 1px solid #6b4124;
+}
+
+.bg-element {
+  position: fixed;
+  bottom: -50px;
+  z-index: 1;
+  color: rgba(141, 98, 62, .35);
+  user-select: none;
+  pointer-events: none;
+  animation: floatUp linear forwards;
+}
+
+@keyframes floatUp {
+  0% {
+    transform: translateY(0) rotate(0deg) scale(.8);
+    opacity: 0;
+  }
+  20%, 80% {
+    opacity: .6;
+  }
+  100% {
+    transform: translateY(-110vh) rotate(45deg) scale(1.2);
+    opacity: 0;
+  }
+}
+
+.popup-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(45, 30, 18, .25);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+}
+
+.popup-backdrop[hidden] {
+  display: none;
+}
+
+.popup {
+  width: min(380px, 90vw);
+  position: relative;
+  padding: 30px 35px;
+  text-align: center;
+  border: 2px solid var(--accent);
+  border-radius: 14px;
+  background: #fffdfa;
+  box-shadow: 0 20px 50px rgba(45, 30, 18, .35);
+  animation: popOpen .25s cubic-bezier(.175, .885, .32, 1.275);
+}
+
+@keyframes popOpen {
+  from {
+    opacity: 0;
+    transform: scale(.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.close-btn {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  padding: 2px 8px;
+  border: 0;
+  background: transparent;
+  color: #8b6c52;
+  font: 28px Arial, sans-serif;
+}
+
+.cat-gif {
+  width: 200px;
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 0 auto 16px;
+  border: 1px solid #dfcfb9;
+  border-radius: 10px;
+  box-shadow: 0 6px 16px rgba(92, 64, 43, .15);
+}
+
+.popup p {
+  margin-bottom: 8px;
+  color: #5c3a21;
+  font: 700 30px/1.2 "Caveat", cursive;
+}
+
+.popup span {
+  color: #9e826b;
+  font-size: 13px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.paper-heart {
+  position: fixed;
+  z-index: 1000;
+  pointer-events: none;
+  animation: burst 1.4s ease-out forwards;
+}
+
+@keyframes burst {
+  from {
+    transform: translate(0, 0) scale(1) rotate(0deg);
+    opacity: 1;
+  }
+  to {
+    transform: translate(var(--x), var(--y)) scale(1.4) rotate(var(--r));
+    opacity: 0;
+  }
+}
+
+@media (max-width: 480px) {
+  body {
+    padding: 16px;
+  }
+
+  .card {
+    padding: 38px 22px;
+  }
+
+  .buttons {
+    gap: 10px;
+  }
+
+  button {
+    padding: 11px 20px;
+    font-size: 15px;
+  }
+
+  .popup {
+    padding: 28px 20px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
+}
+
+  </style>
+</head>
+<body>
+  <main class="card" aria-labelledby="question">
+    <h1 id="question">Will you come on a date with me? 💌</h1>
+
+    <div class="buttons">
+      <button id="yes-btn" type="button">Yes 💕</button>
+      <button id="no-btn" type="button">No</button>
+    </div>
+  </main>
+
+  <div class="popup-backdrop" id="popup-backdrop" hidden>
+    <div class="popup" id="popup" role="dialog" aria-modal="true" aria-labelledby="popup-title">
+      <button class="close-btn" id="close-btn" type="button" aria-label="Close">×</button>
+
+      <img
+        src="https://i.pinimg.com/originals/73/0d/75/730d75ed729397068c7a89fa7476e305.gif"
+        alt="Kissing cats"
+        class="cat-gif"
+        referrerpolicy="no-referrer"
+      >
+
+      <p id="popup-title">I knew you'd say yes! 😽✨</p>
+      <span>Tap anywhere outside to close</span>
+    </div>
+  </div>
+
+  <div id="effects" aria-hidden="true"></div>
+  <script>
+(() => {
+  "use strict";
+
+  const noButton = document.getElementById("no-btn");
+  const yesButton = document.getElementById("yes-btn");
+  const backdrop = document.getElementById("popup-backdrop");
+  const popup = document.getElementById("popup");
+  const closeButton = document.getElementById("close-btn");
+  const effects = document.getElementById("effects");
+
+  if (!noButton || !yesButton || !backdrop || !popup || !closeButton || !effects) {
+    console.error("Required page elements are missing.");
+    return;
+  }
+
+  let attempts = 0;
+  let yesScale = 1;
+  let converted = false;
+
+  const phrases = [
+    "Are you sure? 🥺",
+    "Try again! ✍️",
+    "404: No not found",
+    "Think carefully 🤎",
+    "You have no choice :)"
+  ];
+
+  const symbols = ["🤎", "📜", "✨", "💌", "☕"];
+
+  function createBackgroundElement() {
+    const el = document.createElement("div");
+    el.className = "bg-element";
+    el.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+    el.style.left = `${Math.random() * 100}vw`;
+    el.style.fontSize = `${Math.random() * 12 + 16}px`;
+    el.style.animationDuration = `${Math.random() * 3 + 5}s`;
+
+    document.body.appendChild(el);
+    window.setTimeout(() => el.remove(), 8500);
+  }
+
+  window.setInterval(createBackgroundElement, 700);
+
+  function moveNoButton() {
+    if (converted) return;
+
+    attempts += 1;
+
+    // On the fifth attempt, turn "No" into another Yes button.
+    if (attempts >= 5) {
+      converted = true;
+      noButton.textContent = "Yes (Obviously) 💕";
+      noButton.classList.add("converted");
+      noButton.style.position = "relative";
+      noButton.style.left = "";
+      noButton.style.top = "";
+      noButton.removeEventListener("mouseover", handleMouseOver);
+      noButton.onclick = celebrate;
+      return;
+    }
+
+    const margin = 20;
+    const maxX = Math.max(margin, window.innerWidth - noButton.offsetWidth - margin);
+    const maxY = Math.max(margin, window.innerHeight - noButton.offsetHeight - margin);
+
+    noButton.style.position = "fixed";
+    noButton.style.left = `${Math.floor(margin + Math.random() * (maxX - margin))}px`;
+    noButton.style.top = `${Math.floor(margin + Math.random() * (maxY - margin))}px`;
+
+    yesScale = Math.min(yesScale + 0.15, 1.8);
+    yesButton.style.transform = `scale(${yesScale})`;
+    noButton.textContent = phrases[(attempts - 1) % phrases.length];
+  }
+
+  function handleMouseOver() {
+    moveNoButton();
+  }
+
+  function handleTouch(event) {
+    if (converted) return;
+    event.preventDefault();
+    moveNoButton();
+  }
+
+  function celebrate() {
+    backdrop.hidden = false;
+    document.body.style.overflow = "hidden";
+
+    for (let i = 0; i < 30; i += 1) {
+      const particle = document.createElement("div");
+      particle.className = "paper-heart";
+      particle.textContent = ["🤎", "🤍", "✨", "💕"][Math.floor(Math.random() * 4)];
+      particle.style.left = "50vw";
+      particle.style.top = "50vh";
+      particle.style.setProperty("--x", `${Math.random() * 360 - 180}px`);
+      particle.style.setProperty("--y", `${Math.random() * 360 - 180}px`);
+      particle.style.setProperty("--r", `${Math.random() * 360}deg`);
+      particle.style.fontSize = `${Math.random() * 16 + 18}px`;
+
+      effects.appendChild(particle);
+      window.setTimeout(() => particle.remove(), 1400);
+    }
+  }
+
+  function closePopup() {
+    backdrop.hidden = true;
+    document.body.style.overflow = "";
+  }
+
+  yesButton.addEventListener("click", celebrate);
+  noButton.addEventListener("mouseover", handleMouseOver);
+  noButton.addEventListener("touchstart", handleTouch, { passive: false });
+  noButton.addEventListener("click", (event) => {
+    if (converted) return;
+    event.preventDefault();
+    moveNoButton();
+  });
+
+  closeButton.addEventListener("click", closePopup);
+
+  backdrop.addEventListener("click", (event) => {
+    if (event.target === backdrop) closePopup();
+  });
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && !backdrop.hidden) {
+      closePopup();
+    }
+  });
+
+  window.addEventListener("resize", () => {
+    if (!converted && noButton.style.position === "fixed") {
+      const rect = noButton.getBoundingClientRect();
+      const maxLeft = Math.max(20, window.innerWidth - rect.width - 20);
+      const maxTop = Math.max(20, window.innerHeight - rect.height - 20);
+
+      noButton.style.left = `${Math.min(rect.left, maxLeft)}px`;
+      noButton.style.top = `${Math.min(rect.top, maxTop)}px`;
+    }
+  });
+})();
+
+  </script>
+</body>
+</html>
